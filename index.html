@@ -27,11 +27,11 @@
 <script>
 // ▼▼▼ 여기 두 줄만 본인 Supabase 값으로 바꾸세요 ▼▼▼
 // Project Settings → API 메뉴에서 확인 가능합니다
-const SUPABASE_URL = "여기에_Project_URL_붙여넣기";
-const SUPABASE_ANON_KEY = "여기에_anon_public_키_붙여넣기";
+const SUPABASE_URL = "https://tutxcagkhybttkrzvoso.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_DaKIBL4qkkjOmg26rEYrxQ_LkYnXkQY";
 // ▲▲▲ 여기까지 ▲▲▲
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const PAGE_SIZE = 20;
 let currentPage = 1;
@@ -42,7 +42,7 @@ async function loadPage(page) {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const { data, count, error } = await supabase
+  const { data, count, error } = await sb
     .from('sites')
     .select('number, province, district, location_kdpa, area_km2', { count: 'exact' })
     .order('number', { ascending: true })
