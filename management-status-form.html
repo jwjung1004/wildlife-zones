@@ -15,6 +15,9 @@
     width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
   }
   textarea { min-height: 50px; }
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .checkbox-group .cb { display: flex; align-items: center; gap: 4px; font-weight: normal; font-size: 13px; background: #f0f7f2; padding: 6px 10px; border-radius: 4px; margin: 0; }
+  .checkbox-group .cb input { width: auto; }
   .row2 { display: flex; gap: 10px; }
   .row2 > div { flex: 1; }
   .section-title { font-size: 15px; font-weight: bold; color: #2f6f4f; margin: 20px 0 4px; border-bottom: 2px solid #2f6f4f; padding-bottom: 4px; }
@@ -62,26 +65,26 @@
     <option value="하천형">하천형</option>
     <option value="호수형">호수형</option>
   </select>
-  <label>기타 보호구역 중복 지정 현황</label>
-  <select id="overlap_designation">
-    <option value="없음 or 확인불가">없음 or 확인불가</option>
-    <option value="국립공원">국립공원</option>
-    <option value="도립공원">도립공원</option>
-    <option value="군시립공원">군·시립공원</option>
-    <option value="습지">습지</option>
-    <option value="생태경관">생태경관</option>
-    <option value="자연유산">자연유산(사찰,문화재)</option>
-    <option value="상수원">상수원</option>
-    <option value="기타">기타</option>
-  </select>
+  <label>기타 보호구역 중복 지정 현황 (복수 선택 가능)</label>
+  <div class="checkbox-group" id="overlap_designation">
+    <label class="cb"><input type="checkbox" value="국립공원"> 국립공원</label>
+    <label class="cb"><input type="checkbox" value="도립공원"> 도립공원</label>
+    <label class="cb"><input type="checkbox" value="군시립공원"> 군·시립공원</label>
+    <label class="cb"><input type="checkbox" value="습지"> 습지</label>
+    <label class="cb"><input type="checkbox" value="생태경관"> 생태경관</label>
+    <label class="cb"><input type="checkbox" value="자연유산"> 자연유산(사찰,문화재)</label>
+    <label class="cb"><input type="checkbox" value="상수원"> 상수원</label>
+    <label class="cb"><input type="checkbox" value="없음 or 확인불가"> 없음 or 확인불가</label>
+    <label class="cb"><input type="checkbox" value="기타"> 기타</label>
+  </div>
   <label>중복지정 상세 (있는 경우)</label>
   <input type="text" id="overlap_designation_detail">
-  <label>보호 가치</label>
-  <select id="protection_value">
-    <option value="집단번식지·서식지">집단번식지·서식지</option>
-    <option value="생물다양성 보호">생물다양성 보호</option>
-    <option value="기타">기타</option>
-  </select>
+  <label>보호 가치 (복수 선택 가능)</label>
+  <div class="checkbox-group" id="protection_value">
+    <label class="cb"><input type="checkbox" value="집단번식지·서식지"> 집단번식지·서식지</label>
+    <label class="cb"><input type="checkbox" value="생물다양성 보호"> 생물다양성 보호</label>
+    <label class="cb"><input type="checkbox" value="기타"> 기타</label>
+  </div>
   <label>기타 환경 특성</label>
   <textarea id="other_env_note"></textarea>
 
@@ -179,37 +182,37 @@
     <option value="주기적 출입있으나, 생태계보호 기능 유지">주기적 출입있으나, 생태계보호 기능 유지</option>
     <option value="출입 거의 없거나, 영향 미미">출입 거의 없거나, 영향 미미</option>
   </select>
-  <label>질병 발생</label>
-  <select id="disease_occurrence">
-    <option value="없음(확인불가)">없음(확인불가)</option>
-    <option value="조류인플루엔자(AI)">조류인플루엔자(AI)</option>
-    <option value="아프리카돼지열병(ASF)">아프리카돼지열병(ASF)</option>
-    <option value="소나무 재선충">소나무 재선충</option>
-    <option value="기타">기타</option>
-  </select>
-  <label>재해 등 서식환경 영향</label>
-  <select id="disaster_type">
-    <option value="없음(확인불가)">없음(확인불가)</option>
-    <option value="산불">산불</option>
-    <option value="산사태">산사태</option>
-    <option value="홍수">홍수</option>
-    <option value="가뭄">가뭄</option>
-    <option value="벌채">벌채</option>
-    <option value="습지구조 변경">습지구조 변경(준설,수변훼손 등)</option>
-    <option value="수질오염">수질오염</option>
-    <option value="쓰레기 발생">쓰레기 발생</option>
-    <option value="기타">기타</option>
-  </select>
-  <label>불법행위</label>
-  <select id="illegal_activity_type">
-    <option value="없음(확인불가)">없음(확인불가)</option>
-    <option value="불법 출입">불법 출입</option>
-    <option value="무단 벌목">무단 벌목</option>
-    <option value="무단 경작">무단 경작</option>
-    <option value="낚시">낚시</option>
-    <option value="폐기물 투기">폐기물 투기</option>
-    <option value="기타">기타</option>
-  </select>
+  <label>질병 발생 (복수 선택 가능)</label>
+  <div class="checkbox-group" id="disease_occurrence">
+    <label class="cb"><input type="checkbox" value="없음(확인불가)"> 없음(확인불가)</label>
+    <label class="cb"><input type="checkbox" value="조류인플루엔자(AI)"> 조류인플루엔자(AI)</label>
+    <label class="cb"><input type="checkbox" value="아프리카돼지열병(ASF)"> 아프리카돼지열병(ASF)</label>
+    <label class="cb"><input type="checkbox" value="소나무 재선충"> 소나무 재선충</label>
+    <label class="cb"><input type="checkbox" value="기타"> 기타</label>
+  </div>
+  <label>재해 등 서식환경 영향 (복수 선택 가능)</label>
+  <div class="checkbox-group" id="disaster_type">
+    <label class="cb"><input type="checkbox" value="없음(확인불가)"> 없음(확인불가)</label>
+    <label class="cb"><input type="checkbox" value="산불"> 산불</label>
+    <label class="cb"><input type="checkbox" value="산사태"> 산사태</label>
+    <label class="cb"><input type="checkbox" value="홍수"> 홍수</label>
+    <label class="cb"><input type="checkbox" value="가뭄"> 가뭄</label>
+    <label class="cb"><input type="checkbox" value="벌채"> 벌채</label>
+    <label class="cb"><input type="checkbox" value="습지구조 변경"> 습지구조 변경(준설,수변훼손 등)</label>
+    <label class="cb"><input type="checkbox" value="수질오염"> 수질오염</label>
+    <label class="cb"><input type="checkbox" value="쓰레기 발생"> 쓰레기 발생</label>
+    <label class="cb"><input type="checkbox" value="기타"> 기타</label>
+  </div>
+  <label>불법행위 (복수 선택 가능)</label>
+  <div class="checkbox-group" id="illegal_activity_type">
+    <label class="cb"><input type="checkbox" value="없음(확인불가)"> 없음(확인불가)</label>
+    <label class="cb"><input type="checkbox" value="불법 출입"> 불법 출입</label>
+    <label class="cb"><input type="checkbox" value="무단 벌목"> 무단 벌목</label>
+    <label class="cb"><input type="checkbox" value="무단 경작"> 무단 경작</label>
+    <label class="cb"><input type="checkbox" value="낚시"> 낚시</label>
+    <label class="cb"><input type="checkbox" value="폐기물 투기"> 폐기물 투기</label>
+    <label class="cb"><input type="checkbox" value="기타"> 기타</label>
+  </div>
   <label>기타 위협요인</label><textarea id="other_threat_note"></textarea>
   <label>종합 비고</label><textarea id="overall_note"></textarea>
 
@@ -247,15 +250,17 @@ async function submitForm() {
   }
 
   const fieldIds = ['survey_date','surveyor_type','surveyor_name','rep_env','wetland_subtype',
-    'overlap_designation','overlap_designation_detail','protection_value','other_env_note',
+    'overlap_designation_detail','other_env_note',
     'signage_present','signage_count','marker_post_count','signage_appropriateness',
     'signage_inappropriate_reason','signage_condition','signage_condition_bad_reason',
     'signage_content_accuracy','signage_content_wrong_count','signage_content_wrong_reason',
     'other_facility_mgmt','facility_note','env_mgmt','env_mgmt_note','access_road_status',
     'park_level','main_facility_list','other_mgmt_note','internal_land_use_intensity',
     'internal_land_use_reason','external_land_use_change','external_land_use_reason',
-    'invasive_species_status','invasive_species_names','human_access_level','disease_occurrence',
-    'disaster_type','illegal_activity_type','other_threat_note','overall_note'];
+    'invasive_species_status','invasive_species_names','human_access_level',
+    'other_threat_note','overall_note'];
+
+  const checkboxGroupIds = ['overlap_designation','protection_value','disease_occurrence','disaster_type','illegal_activity_type'];
 
   const record = { site_number: parseInt(siteNumber) };
   fieldIds.forEach(id => {
@@ -267,6 +272,12 @@ async function submitForm() {
     } else {
       record[id] = v;
     }
+  });
+
+  checkboxGroupIds.forEach(id => {
+    const container = document.getElementById(id);
+    const checked = Array.from(container.querySelectorAll('input[type=checkbox]:checked')).map(cb => cb.value);
+    record[id] = checked.length > 0 ? checked.join(', ') : null;
   });
 
   const btn = document.getElementById('submitBtn');
