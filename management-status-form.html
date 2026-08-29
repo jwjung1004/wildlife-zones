@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>관리 현황 조사 입력</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 0; padding: 16px; background: #f7f8fa; }
+  a.back { color: #2f6f4f; text-decoration: none; font-size: 14px; }
+  h1 { font-size: 19px; margin: 10px 0; }
+  .card { background: white; padding: 16px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px; }
+  label { display: block; font-size: 13px; font-weight: bold; margin: 12px 0 4px; }
+  select, input[type=text], input[type=date], input[type=number], textarea {
+    width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
+  }
+  textarea { min-height: 50px; }
+  .row2 { display: flex; gap: 10px; }
+  .row2 > div { flex: 1; }
+  .section-title { font-size: 15px; font-weight: bold; color: #2f6f4f; margin: 20px 0 4px; border-bottom: 2px solid #2f6f4f; padding-bottom: 4px; }
+  button#submitBtn { margin-top: 20px; width: 100%; padding: 14px; background: #2f6f4f; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+  #msg { margin-top: 12px; padding: 10px; border-radius: 4px; display: none; }
+  #msg.ok { background: #e6f4ea; color: #1a7a3d; display: block; }
+  #msg.err { background: #fdecea; color: #c0392b; display: block; }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">&larr; 목록으로</a>
+<h1>관리 현황 조사 현장 입력</h1>
+
+<div class="card">
+  <label>보호구역 선택 *</label>
+  <select id="siteSelect"><option value="">-- 목록에서 선택 --</option></select>
+</div>
+
+<div class="card">
+  <div class="section-title">조사 기본정보</div>
+  <div class="row2">
+    <div><label>조사일</label><input type="date" id="survey_date"></div>
+    <div><label>조사자 유형</label>
+      <select id="surveyor_type">
+        <option value="서식지복원팀">서식지복원팀</option>
+        <option value="외부조사원">외부조사원</option>
+      </select>
+    </div>
+  </div>
+  <label>조사자 이름</label><input type="text" id="surveyor_name">
+
+  <div class="section-title">대상지 환경</div>
+  <label>대표 환경</label>
+  <select id="rep_env">
+    <option value="산림">산림</option>
+    <option value="습지">습지</option>
+    <option value="농경지">농경지</option>
+    <option value="기타">기타</option>
+  </select>
+  <label>습지 세부유형 (해당 시)</label>
+  <select id="wetland_subtype">
+    <option value="">해당없음</option>
+    <option value="산지형">산지형</option>
+    <option value="하천형">하천형</option>
+    <option value="호수형">호수형</option>
+  </select>
+  <label>기타 보호구역 중복 지정 현황</label>
+  <select id="overlap_designation">
+    <option value="없음 or 확인불가">없음 or 확인불가</option>
+    <option value="국립공원">국립공원</option>
+    <option value="도립공원">도립공원</option>
+    <option value="군시립공원">군·시립공원</option>
+    <option value="습지">습지</option>
+    <option value="생태경관">생태경관</option>
+    <option value="자연유산">자연유산(사찰,문화재)</option>
+    <option value="상수원">상수원</option>
+    <option value="기타">기타</option>
+  </select>
+  <label>중복지정 상세 (있는 경우)</label>
+  <input type="text" id="overlap_designation_detail">
+  <label>보호 가치</label>
+  <select id="protection_value">
+    <option value="집단번식지·서식지">집단번식지·서식지</option>
+    <option value="생물다양성 보호">생물다양성 보호</option>
+    <option value="기타">기타</option>
+  </select>
+  <label>기타 환경 특성</label>
+  <textarea id="other_env_note"></textarea>
+
+  <div class="section-title">표지판 및 해설판</div>
+  <label>표지판 유무</label>
+  <select id="signage_present">
+    <option value="있음">있음</option>
+    <option value="없음 or 확인불가">없음 or 확인불가</option>
+  </select>
+  <div class="row2">
+    <div><label>표지판 수</label><input type="number" id="signage_count"></div>
+    <div><label>표주 수</label><input type="number" id="marker_post_count"></div>
+  </div>
+  <label>표지판 적절성</label>
+  <select id="signage_appropriateness">
+    <option value="적절">적절</option>
+    <option value="부적절">부적절</option>
+  </select>
+  <label>부적절 사유</label><input type="text" id="signage_inappropriate_reason">
+  <label>표지판 관리 상태</label>
+  <select id="signage_condition">
+    <option value="양호">양호</option>
+    <option value="보통">보통</option>
+    <option value="불량">불량</option>
+  </select>
+  <label>불량 사유</label><input type="text" id="signage_condition_bad_reason">
+  <label>표지 및 해설 내용 정확성</label>
+  <select id="signage_content_accuracy">
+    <option value="정확">정확</option>
+    <option value="부정확">부정확</option>
+  </select>
+  <div class="row2">
+    <div><label>부정확 개수</label><input type="number" id="signage_content_wrong_count"></div>
+    <div><label>부정확 사유</label><input type="text" id="signage_content_wrong_reason"></div>
+  </div>
+
+  <div class="section-title">현장 관리 상태</div>
+  <label>기타 시설 관리 (데크 등)</label>
+  <select id="other_facility_mgmt">
+    <option value="없음 or 확인불가">없음 or 확인불가</option>
+    <option value="양호">양호</option>
+    <option value="보통">보통</option>
+    <option value="불량">불량</option>
+  </select>
+  <label>시설 비고</label><input type="text" id="facility_note">
+  <label>환경 관리</label>
+  <select id="env_mgmt">
+    <option value="양호">양호</option>
+    <option value="보통">보통</option>
+    <option value="불량">불량</option>
+  </select>
+  <label>환경관리 비고</label><input type="text" id="env_mgmt_note">
+  <label>이동로 현황</label>
+  <select id="access_road_status">
+    <option value="관리도로 있음">관리도로 있음</option>
+    <option value="관리 및 접근도로 없음 또는 불분명">관리 및 접근도로 없음 또는 불분명</option>
+    <option value="무분별한 이동로 조성으로 생태계 훼손 우려">무분별한 이동로 조성으로 생태계 훼손 우려</option>
+  </select>
+  <label>공원화 수준</label>
+  <select id="park_level">
+    <option value="여가/운동 시설 없음">여가/운동 시설 없음</option>
+    <option value="일부 공원화">일부 공원화</option>
+    <option value="완전 공원화">완전 공원화</option>
+  </select>
+  <label>주요 시설물</label><textarea id="main_facility_list"></textarea>
+  <label>기타 관리현황</label><textarea id="other_mgmt_note"></textarea>
+
+  <div class="section-title">토지이용 및 위협요인</div>
+  <label>내부 토지이용 강도</label>
+  <select id="internal_land_use_intensity">
+    <option value="없음">없음</option>
+    <option value="약">약</option>
+    <option value="중">중</option>
+    <option value="강">강</option>
+  </select>
+  <label>내부 이용강도 이유</label><input type="text" id="internal_land_use_reason">
+  <label>외부 토지이용 변화</label>
+  <select id="external_land_use_change">
+    <option value="없음">없음</option>
+    <option value="약">약</option>
+    <option value="중">중</option>
+    <option value="강">강</option>
+  </select>
+  <label>외부 이용변화 이유</label><input type="text" id="external_land_use_reason">
+  <label>생태계교란종(외래종 포함)</label>
+  <select id="invasive_species_status">
+    <option value="없음(확인불가)">없음(확인불가)</option>
+    <option value="국지적 발생">국지적 발생</option>
+    <option value="전반적 우점">전반적 우점</option>
+  </select>
+  <label>확인 종명</label><input type="text" id="invasive_species_names">
+  <label>사람 출입</label>
+  <select id="human_access_level">
+    <option value="등산객 등 출입 많아 적절한 관리 필요">등산객 등 출입 많아 적절한 관리 필요</option>
+    <option value="주기적 출입있으나, 생태계보호 기능 유지">주기적 출입있으나, 생태계보호 기능 유지</option>
+    <option value="출입 거의 없거나, 영향 미미">출입 거의 없거나, 영향 미미</option>
+  </select>
+  <label>질병 발생</label>
+  <select id="disease_occurrence">
+    <option value="없음(확인불가)">없음(확인불가)</option>
+    <option value="조류인플루엔자(AI)">조류인플루엔자(AI)</option>
+    <option value="아프리카돼지열병(ASF)">아프리카돼지열병(ASF)</option>
+    <option value="소나무 재선충">소나무 재선충</option>
+    <option value="기타">기타</option>
+  </select>
+  <label>재해 등 서식환경 영향</label>
+  <select id="disaster_type">
+    <option value="없음(확인불가)">없음(확인불가)</option>
+    <option value="산불">산불</option>
+    <option value="산사태">산사태</option>
+    <option value="홍수">홍수</option>
+    <option value="가뭄">가뭄</option>
+    <option value="벌채">벌채</option>
+    <option value="습지구조 변경">습지구조 변경(준설,수변훼손 등)</option>
+    <option value="수질오염">수질오염</option>
+    <option value="쓰레기 발생">쓰레기 발생</option>
+    <option value="기타">기타</option>
+  </select>
+  <label>불법행위</label>
+  <select id="illegal_activity_type">
+    <option value="없음(확인불가)">없음(확인불가)</option>
+    <option value="불법 출입">불법 출입</option>
+    <option value="무단 벌목">무단 벌목</option>
+    <option value="무단 경작">무단 경작</option>
+    <option value="낚시">낚시</option>
+    <option value="폐기물 투기">폐기물 투기</option>
+    <option value="기타">기타</option>
+  </select>
+  <label>기타 위협요인</label><textarea id="other_threat_note"></textarea>
+  <label>종합 비고</label><textarea id="overall_note"></textarea>
+
+  <button id="submitBtn" onclick="submitForm()">저장하기</button>
+  <div id="msg"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://tutxcagkhybttkrzvoso.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_DaKIBL4qkkjOmg26rEYrxQ_LkYnXkQY";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function loadSites() {
+  const { data, error } = await sb.from('sites').select('number, province, district, location_kdpa').order('number');
+  if (error) return;
+  const sel = document.getElementById('siteSelect');
+  data.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.number;
+    opt.textContent = `${s.number}. ${s.province || ''} ${s.district || ''} - ${s.location_kdpa || ''}`;
+    sel.appendChild(opt);
+  });
+
+  // URL에 ?id= 가 있으면 자동 선택
+  const params = new URLSearchParams(location.search);
+  const presetId = params.get('id');
+  if (presetId) sel.value = presetId;
+}
+
+async function submitForm() {
+  const siteNumber = document.getElementById('siteSelect').value;
+  if (!siteNumber) {
+    alert('보호구역을 선택해주세요.');
+    return;
+  }
+
+  const fieldIds = ['survey_date','surveyor_type','surveyor_name','rep_env','wetland_subtype',
+    'overlap_designation','overlap_designation_detail','protection_value','other_env_note',
+    'signage_present','signage_count','marker_post_count','signage_appropriateness',
+    'signage_inappropriate_reason','signage_condition','signage_condition_bad_reason',
+    'signage_content_accuracy','signage_content_wrong_count','signage_content_wrong_reason',
+    'other_facility_mgmt','facility_note','env_mgmt','env_mgmt_note','access_road_status',
+    'park_level','main_facility_list','other_mgmt_note','internal_land_use_intensity',
+    'internal_land_use_reason','external_land_use_change','external_land_use_reason',
+    'invasive_species_status','invasive_species_names','human_access_level','disease_occurrence',
+    'disaster_type','illegal_activity_type','other_threat_note','overall_note'];
+
+  const record = { site_number: parseInt(siteNumber) };
+  fieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    let v = el.value;
+    if (v === '') { record[id] = null; return; }
+    if (['signage_count','marker_post_count','signage_content_wrong_count'].includes(id)) {
+      record[id] = parseInt(v);
+    } else {
+      record[id] = v;
+    }
+  });
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  const { error } = await sb.from('management_status').insert(record);
+
+  const msg = document.getElementById('msg');
+  if (error) {
+    msg.className = 'err';
+    msg.textContent = '저장 실패: ' + error.message;
+  } else {
+    msg.className = 'ok';
+    msg.textContent = '저장되었습니다! 상세페이지에서 확인해보세요.';
+  }
+  btn.disabled = false;
+  btn.textContent = '저장하기';
+}
+
+loadSites();
+</script>
+
+</body>
+</html>
