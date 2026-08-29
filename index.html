@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>야생생물 보호구역 지정 현황</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 0; padding: 20px; background: #f7f8fa; }
+  h1 { font-size: 20px; }
+  table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+  th { background: #2f6f4f; color: white; }
+  tr:hover { background: #f0f7f2; cursor: pointer; }
+  .pagination { margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .pagination button { padding: 6px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; }
+  .pagination button.active { background: #2f6f4f; color: white; border-color: #2f6f4f; }
+  .loading { padding: 20px; text-align: center; color: #888; }
+</style>
+</head>
+<body>
+
+<h1>야생생물 보호구역 지정 현황</h1>
+<div id="content" class="loading">불러오는 중...</div>
+<div id="pagination" class="pagination"></div>
+
+<script>
+// ▼▼▼ 여기 두 줄만 본인 Supabase 값으로 바꾸세요 ▼▼▼
+// Project Settings → API 메뉴에서 확인 가능합니다
+const SUPABASE_URL = "여기에_Project_URL_붙여넣기";
+const SUPABASE_ANON_KEY = "여기에_anon_public_키_붙여넣기";
+// ▲▲▲ 여기까지 ▲▲▲
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PAGE_SIZE = 20;
+let currentPage = 1;
+let totalCount = 0;
+
+async function loadPage(page) {
+  currentPage = page;
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  const { data, count, error } = await supabase
+    .from('sites')
+    .select('number, province, district, location_kdpa, area_km2', { count: 'exact' })
+    .order('number', { ascending: true })
+    .range(from, to);
+
+  if (error) {
+    document.getElementById('content').innerHTML = '데이터를 불러오지 못했습니다: ' + error.message;
+    return;
+  }
+
+  totalCount = count;
+  renderTable(data);
+  renderPagination();
+}
+
+function renderTable(rows) {
+  let html = '<table><thead><tr><th>번호</th><th>시도명</th><th>시군구명</th><th>소재지</th><th>지정면적(㎢)</th></tr></thead><tbody>';
+  for (const r of rows) {
+    html += `<tr onclick="location.href='site.html?id=${r.number}'">
+      <td>${r.number}</td><td>${r.province || ''}</td><td>${r.district || ''}</td>
+      <td>${r.location_kdpa || ''}</td><td>${r.area_km2 || ''}</td></tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('content').innerHTML = html;
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  let html = '';
+  for (let p = 1; p <= totalPages; p++) {
+    html += `<button class="${p === currentPage ? 'active' : ''}" onclick="loadPage(${p})">${p}</button>`;
+  }
+  document.getElementById('pagination').innerHTML = html;
+}
+
+loadPage(1);
+</script>
+
+</body>
+</html>
