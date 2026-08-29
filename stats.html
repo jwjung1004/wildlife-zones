@@ -106,8 +106,9 @@ async function loadStats() {
 
   html += `<h2>면적구간별 개수</h2><div class="card"><table><thead><tr>`;
   Object.keys(bands).forEach(b => html += `<th>${b}</th>`);
-  html += `</tr></thead><tbody><tr>`;
+  html += `<th>합계</th></tr></thead><tbody><tr>`;
   Object.values(bands).forEach(v => html += `<td>${v}개</td>`);
+  html += `<td><b>${totalCount}개</b></td>`;
   html += `</tr></tbody></table></div>`;
 
   html += `<h2>광역지자체별 개수 및 면적</h2><div class="card"><table><thead><tr>
@@ -115,16 +116,25 @@ async function loadStats() {
   provinces.forEach(p => {
     html += `<tr><td>${p}</td><td>${byProvince[p].count}개</td><td>${byProvince[p].area.toFixed(2)}</td></tr>`;
   });
+  html += `<tr><td><b>합계</b></td><td><b>${totalCount}개</b></td><td><b>${totalArea.toFixed(2)}</b></td></tr>`;
   html += `</tbody></table></div>`;
 
   html += `<h2>지자체별 × 등재사이트별 등재 개수</h2><div class="card"><table><thead><tr><th>시도</th>`;
   PLATFORMS.forEach(pl => html += `<th>${pl.label}</th>`);
   html += `</tr></thead><tbody>`;
+  const platformTotals = {};
+  PLATFORMS.forEach(pl => platformTotals[pl.key] = 0);
   provinces.forEach(p => {
     html += `<tr><td>${p}</td>`;
-    PLATFORMS.forEach(pl => html += `<td>${byProvince[p].platforms[pl.key]}개</td>`);
+    PLATFORMS.forEach(pl => {
+      html += `<td>${byProvince[p].platforms[pl.key]}개</td>`;
+      platformTotals[pl.key] += byProvince[p].platforms[pl.key];
+    });
     html += `</tr>`;
   });
+  html += `<tr><td><b>합계</b></td>`;
+  PLATFORMS.forEach(pl => html += `<td><b>${platformTotals[pl.key]}개</b></td>`);
+  html += `</tr>`;
   html += `</tbody></table></div>`;
 
   document.getElementById('content').innerHTML = html;
