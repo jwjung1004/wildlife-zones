@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>야생생물 보호구역 통계</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 0; padding: 20px; background: #f7f8fa; }
+  a.back { color: #2f6f4f; text-decoration: none; font-size: 14px; }
+  h1 { font-size: 20px; margin: 10px 0 4px; }
+  h2 { font-size: 16px; margin: 24px 0 8px; color: #2f6f4f; }
+  .card { background: white; padding: 16px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px; text-align: center; border-bottom: 1px solid #eee; }
+  th { background: #2f6f4f; color: white; }
+  td:first-child, th:first-child { text-align: left; }
+  .total-box { display: flex; gap: 16px; flex-wrap: wrap; }
+  .stat-item { background: #f0f7f2; padding: 14px 20px; border-radius: 6px; text-align: center; }
+  .stat-item .num { font-size: 22px; font-weight: bold; color: #2f6f4f; }
+  .stat-item .label { font-size: 12px; color: #666; }
+  .loading { padding: 20px; text-align: center; color: #888; }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">&larr; 목록으로</a>
+<h1>야생생물 보호구역 통계</h1>
+
+<div id="content" class="loading">불러오는 중...</div>
+
+<script>
+const SUPABASE_URL = "https://tutxcagkhybttkrzvoso.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_DaKIBL4qkkjOmg26rEYrxQ_LkYnXkQY";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PLATFORMS = [
+  { key: 'kdpa_registered', label: 'KDPA' },
+  { key: 'kgeop_registered', label: 'K-Geop' },
+  { key: 'seereal_registered', label: 'SEE:REAL' },
+  { key: 'vworld_registered', label: 'Vworld' },
+  { key: 'toojieum_registered', label: '토지이음' },
+  { key: 'ecobank_registered', label: '생태자연도' },
+];
+
+function isRegistered(v) {
+  return (v || '').toString().trim() === 'O';
+}
+
+async function loadStats() {
+  const { data: sites, error: e1 } = await sb.from('sites').select('number, province, area_km2');
+  const { data: regs, error: e2 } = await sb.from('site_registration').select('*');
+
+  if (e1 || e2) {
+    document.getElementById('content').innerHTML = '데이터를 불러오지 못했습니다: ' + ((e1 || e2).message);
+    return;
+  }
+
+  const regMap = {};
+  (regs || []).forEach(r => { regMap[r.site_number] = r; });
+
+  // 1) 총계
+  const totalCount = sites.length;
+  const totalArea = sites.reduce((sum, s) => sum + (parseFloat(s.area_km2) || 0), 0);
+
+  // 2) 면적구간별 개수
+  const bands = { '1㎢ 미만': 0, '1~5㎢': 0, '5~10㎢': 0, '10㎢ 이상': 0, '면적 미상': 0 };
+  sites.forEach(s => {
+    const a = parseFloat(s.area_km2);
+    if (isNaN(a)) bands['면적 미상']++;
+    else if (a < 1) bands['1㎢ 미만']++;
+    else if (a < 5) bands['1~5㎢']++;
+    else if (a < 10) bands['5~10㎢']++;
+    else bands['10㎢ 이상']++;
+  });
+
+  // 3) 지자체(시도)별 개수 + 면적 + 플랫폼별 등재 개수
+  const byProvince = {};
+  sites.forEach(s => {
+    const p = s.province || '미상';
+    if (!byProvince[p]) {
+      byProvince[p] = { count: 0, area: 0, platforms: {} };
+      PLATFORMS.forEach(pl => byProvince[p].platforms[pl.key] = 0);
+    }
+    byProvince[p].count++;
+    byProvince[p].area += (parseFloat(s.area_km2) || 0);
+    const reg = regMap[s.number];
+    if (reg) {
+      PLATFORMS.forEach(pl => {
+        if (isRegistered(reg[pl.key])) byProvince[p].platforms[pl.key]++;
+      });
+    }
+  });
+
+  const provinces = Object.keys(byProvince).sort();
+
+  // ---- 렌더링 ----
+  let html = '';
+
+  html += `<div class="card">
+    <div class="total-box">
+      <div class="stat-item"><div class="num">${totalCount}개</div><div class="label">총 보호구역 수</div></div>
+      <div class="stat-item"><div class="num">${totalArea.toFixed(2)}㎢</div><div class="label">총 지정면적</div></div>
+    </div>
+  </div>`;
+
+  html += `<h2>면적구간별 개수</h2><div class="card"><table><thead><tr>`;
+  Object.keys(bands).forEach(b => html += `<th>${b}</th>`);
+  html += `</tr></thead><tbody><tr>`;
+  Object.values(bands).forEach(v => html += `<td>${v}개</td>`);
+  html += `</tr></tbody></table></div>`;
+
+  html += `<h2>광역지자체별 개수 및 면적</h2><div class="card"><table><thead><tr>
+    <th>시도</th><th>개수</th><th>면적(㎢)</th></tr></thead><tbody>`;
+  provinces.forEach(p => {
+    html += `<tr><td>${p}</td><td>${byProvince[p].count}개</td><td>${byProvince[p].area.toFixed(2)}</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  html += `<h2>지자체별 × 등재사이트별 등재 개수</h2><div class="card"><table><thead><tr><th>시도</th>`;
+  PLATFORMS.forEach(pl => html += `<th>${pl.label}</th>`);
+  html += `</tr></thead><tbody>`;
+  provinces.forEach(p => {
+    html += `<tr><td>${p}</td>`;
+    PLATFORMS.forEach(pl => html += `<td>${byProvince[p].platforms[pl.key]}개</td>`);
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  document.getElementById('content').innerHTML = html;
+}
+
+loadStats();
+</script>
+
+</body>
+</html>
