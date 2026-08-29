@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>생물상 조사 입력</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 0; padding: 16px; background: #f7f8fa; }
+  a.back { color: #2f6f4f; text-decoration: none; font-size: 14px; }
+  h1 { font-size: 19px; margin: 10px 0; }
+  .card { background: white; padding: 16px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px; }
+  label { display: block; font-size: 13px; font-weight: bold; margin: 12px 0 4px; }
+  select, input[type=text], input[type=date], input[type=number] {
+    width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
+  }
+  .row2 { display: flex; gap: 10px; }
+  .row2 > div { flex: 1; }
+  .section-title { font-size: 15px; font-weight: bold; color: #2f6f4f; margin: 20px 0 4px; border-bottom: 2px solid #2f6f4f; padding-bottom: 4px; }
+  .species-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 10px; border-bottom: 1px dashed #ddd; padding-bottom: 10px; }
+  .species-row > div { flex: 1; }
+  .species-row .name { flex: 2; }
+  .species-row .remove-btn { flex: 0 0 auto; background: #e74c3c; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; height: 37px; }
+  #addRowBtn { width: 100%; padding: 10px; background: white; border: 1px dashed #2f6f4f; color: #2f6f4f; border-radius: 6px; cursor: pointer; font-size: 14px; margin-bottom: 8px; }
+  button#submitBtn { margin-top: 16px; width: 100%; padding: 14px; background: #2f6f4f; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+  #msg { margin-top: 12px; padding: 10px; border-radius: 4px; display: none; }
+  #msg.ok { background: #e6f4ea; color: #1a7a3d; display: block; }
+  #msg.err { background: #fdecea; color: #c0392b; display: block; }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">&larr; 목록으로</a>
+<h1>생물상 조사 현장 입력</h1>
+
+<div class="card">
+  <label>대상지 위치(보호구역) 선택 *</label>
+  <select id="siteSelect"><option value="">-- 목록에서 선택 --</option></select>
+
+  <div class="row2">
+    <div><label>날짜</label><input type="date" id="survey_date"></div>
+    <div><label>조사자 이름</label><input type="text" id="surveyor_name"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">확인한 생물종</div>
+  <div id="speciesRows"></div>
+  <button id="addRowBtn" onclick="addSpeciesRow()">+ 생물종 추가</button>
+
+  <button id="submitBtn" onclick="submitForm()">저장하기</button>
+  <div id="msg"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://tutxcagkhybttkrzvoso.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_DaKIBL4qkkjOmg26rEYrxQ_LkYnXkQY";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let rowCount = 0;
+
+function addSpeciesRow() {
+  rowCount++;
+  const div = document.createElement('div');
+  div.className = 'species-row';
+  div.id = 'row-' + rowCount;
+  div.innerHTML = `
+    <div class="name"><label>생물이름</label><input type="text" class="sp-name" placeholder="예: 원앙"></div>
+    <div><label>개체수</label><input type="number" class="sp-count" placeholder="예: 3"></div>
+    <div><label>비고</label><input type="text" class="sp-note" placeholder="흔적, 배설물 등"></div>
+    <button class="remove-btn" onclick="document.getElementById('row-${rowCount}').remove()">삭제</button>
+  `;
+  document.getElementById('speciesRows').appendChild(div);
+}
+
+async function loadSites() {
+  const { data, error } = await sb.from('sites').select('number, province, district, location_kdpa').order('number');
+  if (error) return;
+  const sel = document.getElementById('siteSelect');
+  data.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.number;
+    opt.textContent = `${s.number}. ${s.province || ''} ${s.district || ''} - ${s.location_kdpa || ''}`;
+    sel.appendChild(opt);
+  });
+  const params = new URLSearchParams(location.search);
+  const presetId = params.get('id');
+  if (presetId) sel.value = presetId;
+  addSpeciesRow(); // 기본 1줄 표시
+}
+
+async function submitForm() {
+  const siteNumber = document.getElementById('siteSelect').value;
+  if (!siteNumber) {
+    alert('대상지(보호구역)를 선택해주세요.');
+    return;
+  }
+  const surveyDate = document.getElementById('survey_date').value || null;
+  const surveyorName = document.getElementById('surveyor_name').value || null;
+
+  const rows = Array.from(document.querySelectorAll('.species-row')).map(row => {
+    const name = row.querySelector('.sp-name').value.trim();
+    const count = row.querySelector('.sp-count').value;
+    const note = row.querySelector('.sp-note').value.trim();
+    return { name, count, note };
+  }).filter(r => r.name !== '');
+
+  if (rows.length === 0) {
+    alert('최소 1개 이상의 생물종을 입력해주세요.');
+    return;
+  }
+
+  const records = rows.map(r => ({
+    site_number: parseInt(siteNumber),
+    survey_date: surveyDate,
+    surveyor_name: surveyorName,
+    species_name: r.name,
+    individual_count: r.count === '' ? null : parseInt(r.count),
+    note: r.note === '' ? null : r.note
+  }));
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  const { error } = await sb.from('biota_survey').insert(records);
+
+  const msg = document.getElementById('msg');
+  if (error) {
+    msg.className = 'err';
+    msg.textContent = '저장 실패: ' + error.message;
+  } else {
+    msg.className = 'ok';
+    msg.textContent = `${records.length}건 저장되었습니다!`;
+    document.getElementById('speciesRows').innerHTML = '';
+    rowCount = 0;
+    addSpeciesRow();
+  }
+  btn.disabled = false;
+  btn.textContent = '저장하기';
+}
+
+loadSites();
+</script>
+
+</body>
+</html>
