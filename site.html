@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>보호구역 상세정보</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 0; padding: 20px; background: #f7f8fa; }
+  a.back { color: #2f6f4f; text-decoration: none; font-size: 14px; }
+  h1 { font-size: 20px; margin: 10px 0; }
+  .basic-card { background: white; padding: 16px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px; }
+  .btn-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .btn-row button { padding: 10px 18px; border: 1px solid #2f6f4f; background: white; color: #2f6f4f; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .btn-row button.active { background: #2f6f4f; color: white; }
+  .section { display: none; background: white; padding: 16px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .section.visible { display: block; }
+  table.kv { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  table.kv th { text-align: left; width: 180px; background: #f0f7f2; padding: 8px; font-size: 13px; vertical-align: top; border-bottom: 1px solid #eee; }
+  table.kv td { padding: 8px; font-size: 13px; border-bottom: 1px solid #eee; }
+  .record-title { font-weight: bold; margin: 16px 0 6px; color: #2f6f4f; font-size: 14px; }
+  .empty { color: #999; padding: 20px; text-align: center; }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">&larr; 목록으로</a>
+<h1 id="siteTitle">불러오는 중...</h1>
+
+<div class="basic-card" id="basicInfo"></div>
+
+<div class="btn-row">
+  <button id="btnReg" class="active" onclick="showSection('reg')">등재 현황</button>
+  <button id="btnStatus" onclick="showSection('status')">관리 현황 조사</button>
+  <button id="btnMee" onclick="showSection('mee')">관리 효과성 평가</button>
+</div>
+
+<div id="secReg" class="section visible"></div>
+<div id="secStatus" class="section"></div>
+<div id="secMee" class="section"></div>
+
+<script>
+const SUPABASE_URL = "https://tutxcagkhybttkrzvoso.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_DaKIBL4qkkjOmg26rEYrxQ_LkYnXkQY";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const params = new URLSearchParams(location.search);
+const siteId = params.get('id');
+
+function kv(label, value) {
+  return `<tr><th>${label}</th><td>${(value === null || value === undefined || value === '') ? '-' : value}</td></tr>`;
+}
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.btn-row button').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('visible');
+  document.getElementById('btn' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+}
+
+async function loadSite() {
+  if (!siteId) {
+    document.getElementById('siteTitle').textContent = '보호구역 번호가 없습니다.';
+    return;
+  }
+
+  // 1) 기본 정보 (sites)
+  const { data: site, error: siteErr } = await sb
+    .from('sites')
+    .select('*')
+    .eq('number', siteId)
+    .single();
+
+  if (siteErr || !site) {
+    document.getElementById('siteTitle').textContent = '해당 보호구역을 찾을 수 없습니다.';
+    return;
+  }
+
+  document.getElementById('siteTitle').textContent =
+    `${site.number}. ${site.province || ''} ${site.district || ''}`;
+
+  document.getElementById('basicInfo').innerHTML = `
+    <table class="kv">
+      ${kv('소재지', site.location_kdpa)}
+      ${kv('지정면적(㎢)', site.area_km2)}
+      ${kv('최초지정연도', site.designated_year)}
+      ${kv('지정권자', site.designating_authority)}
+      ${kv('최근 고시번호', site.notice_number)}
+      ${kv('고시일자', site.notice_date)}
+      ${kv('지정사유', site.designation_reason)}
+      ${kv('제한사항', site.restrictions)}
+      ${kv('담당부서 및 연락처', site.dept_contact)}
+      ${kv('비고', site.note)}
+    </table>`;
+
+  // 2) 등재 현황
+  const { data: reg } = await sb
+    .from('site_registration')
+    .select('*')
+    .eq('site_number', siteId)
+    .maybeSingle();
+
+  document.getElementById('secReg').innerHTML = reg ? `
+    <table class="kv">
+      ${kv('KDPA 등재여부', reg.kdpa_registered)}
+      ${kv('KDPA 문제점', reg.kdpa_issue)}
+      ${kv('K-Geop 등재여부', reg.kgeop_registered)}
+      ${kv('K-Geop 등재명/문제점', reg.kgeop_name_issue)}
+      ${kv('SEE:REAL 등재여부', reg.seereal_registered)}
+      ${kv('SEE:REAL 등재명/문제점', reg.seereal_name_issue)}
+      ${kv('Vworld 등재여부', reg.vworld_registered)}
+      ${kv('Vworld 확인주제도', reg.vworld_theme_map)}
+      ${kv('Vworld 문제점', reg.vworld_issue)}
+      ${kv('토지이음 등재여부', reg.toojieum_registered)}
+      ${kv('토지이음 등재명/문제점', reg.toojieum_name_issue)}
+      ${kv('생태자연도 등재여부', reg.ecobank_registered)}
+      ${kv('생태자연도 오류내용', reg.ecobank_issue)}
+      ${kv('표지판 유무', reg.signage_present)}
+      ${kv('표지판 교체필요', reg.signage_replace_needed)}
+      ${kv('포유류 종수/개체수', (reg.mammal_species_count||'-') + ' / ' + (reg.mammal_individual_count||'-'))}
+      ${kv('조류 종수/개체수', (reg.bird_species_count||'-') + ' / ' + (reg.bird_individual_count||'-'))}
+      ${kv('멸종위기종 1급/2급', (reg.endangered_grade1_count||'-') + ' / ' + (reg.endangered_grade2_count||'-'))}
+    </table>` : '<div class="empty">등재 현황 정보가 아직 없습니다.</div>';
+
+  // 3) 관리 현황 조사 (여러 건일 수 있음)
+  const { data: statusRows } = await sb
+    .from('management_status')
+    .select('*')
+    .eq('site_number', siteId)
+    .order('survey_date', { ascending: false });
+
+  if (statusRows && statusRows.length > 0) {
+    let html = '';
+    statusRows.forEach((r, i) => {
+      html += `<div class="record-title">조사 ${i+1} — ${r.survey_date || '날짜미상'} (${r.surveyor_type || ''} ${r.surveyor_name || ''})</div>`;
+      html += `<table class="kv">
+        ${kv('대표환경', r.rep_env)}
+        ${kv('중복지정현황', r.overlap_designation)}
+        ${kv('보호가치', r.protection_value)}
+        ${kv('표지판 상태', r.signage_condition)}
+        ${kv('환경관리', r.env_mgmt)}
+        ${kv('이동로 현황', r.access_road_status)}
+        ${kv('공원화 수준', r.park_level)}
+        ${kv('내부 토지이용강도', r.internal_land_use_intensity)}
+        ${kv('외부 토지이용변화', r.external_land_use_change)}
+        ${kv('생태계교란종', r.invasive_species_status + ' ' + (r.invasive_species_names||''))}
+        ${kv('사람출입 수준', r.human_access_level)}
+        ${kv('질병발생', r.disease_occurrence)}
+        ${kv('재해유형', r.disaster_type)}
+        ${kv('불법행위', r.illegal_activity_type)}
+        ${kv('종합비고', r.overall_note)}
+      </table>`;
+    });
+    document.getElementById('secStatus').innerHTML = html;
+  } else {
+    document.getElementById('secStatus').innerHTML = '<div class="empty">관리 현황 조사 결과가 아직 없습니다. (현장 입력 폼 준비중)</div>';
+  }
+
+  // 4) 관리 효과성 평가 (여러 건일 수 있음)
+  const { data: meeRows } = await sb
+    .from('management_effectiveness')
+    .select('*')
+    .eq('site_number', siteId)
+    .order('survey_date', { ascending: false });
+
+  if (meeRows && meeRows.length > 0) {
+    let html = '';
+    meeRows.forEach((r, i) => {
+      html += `<div class="record-title">평가 ${i+1} — ${r.survey_date || '날짜미상'} (총점: ${r.total_score ?? '-'})</div>`;
+      html += `<table class="kv">
+        ${kv('1. 조례 제정', r.c1_ordinance)}
+        ${kv('2. 세부계획 수립', r.c2_plan + ' ' + (r.c2_1_plan_name||''))}
+        ${kv('3. 모니터링', r.c3_monitoring)}
+        ${kv('4. 예산 확보', r.c4_budget)}
+        ${kv('5. 전담 인력', r.c5_staff)}
+        ${kv('6. 사유지 매입/관리', r.c6_land)}
+        ${kv('7. 이해관계자 협력', r.c7_cooperation)}
+        ${kv('8. 주민지원', r.c8_resident_support)}
+        ${kv('9. 이해관계자 인식', r.c9_awareness)}
+        ${kv('10. 핵심 관리목표 상태', r.c10_core_goal)}
+        ${kv('주요 민원사항', r.major_complaints)}
+        ${kv('기타 의견', r.other_opinion)}
+      </table>`;
+    });
+    document.getElementById('secMee').innerHTML = html;
+  } else {
+    document.getElementById('secMee').innerHTML = '<div class="empty">관리 효과성 평가 결과가 아직 없습니다. (현장 입력 폼 준비중)</div>';
+  }
+}
+
+loadSite();
+</script>
+
+</body>
+</html>
