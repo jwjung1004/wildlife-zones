@@ -41,30 +41,29 @@
   <div class="section-title">조사 기본정보</div>
   <div class="row2">
     <div><label>조사일</label><input type="date" id="survey_date"></div>
-    <div><label>조사자 유형</label>
-      <select id="surveyor_type">
-        <option value="서식지복원팀">서식지복원팀</option>
-        <option value="외부조사원">외부조사원</option>
-      </select>
-    </div>
+  </div>
+  <label>조사자 유형</label>
+  <div class="checkbox-group" id="surveyor_type">
+    <label class="cb"><input type="radio" name="surveyor_type" value="서식지복원팀"> 서식지복원팀</label>
+    <label class="cb"><input type="radio" name="surveyor_type" value="외부조사원"> 외부조사원</label>
   </div>
   <label>조사자 이름</label><input type="text" id="surveyor_name">
 
   <div class="section-title">대상지 환경</div>
   <label>대표 환경</label>
-  <select id="rep_env">
-    <option value="산림">산림</option>
-    <option value="습지">습지</option>
-    <option value="농경지">농경지</option>
-    <option value="기타">기타</option>
-  </select>
+  <div class="checkbox-group" id="rep_env">
+    <label class="cb"><input type="radio" name="rep_env" value="산림"> 산림</label>
+    <label class="cb"><input type="radio" name="rep_env" value="습지"> 습지</label>
+    <label class="cb"><input type="radio" name="rep_env" value="농경지"> 농경지</label>
+    <label class="cb"><input type="radio" name="rep_env" value="기타"> 기타</label>
+  </div>
   <label>습지 세부유형 (해당 시)</label>
-  <select id="wetland_subtype">
-    <option value="">해당없음</option>
-    <option value="산지형">산지형</option>
-    <option value="하천형">하천형</option>
-    <option value="호수형">호수형</option>
-  </select>
+  <div class="checkbox-group" id="wetland_subtype">
+    <label class="cb"><input type="radio" name="wetland_subtype" value=""> 해당없음</label>
+    <label class="cb"><input type="radio" name="wetland_subtype" value="산지형"> 산지형</label>
+    <label class="cb"><input type="radio" name="wetland_subtype" value="하천형"> 하천형</label>
+    <label class="cb"><input type="radio" name="wetland_subtype" value="호수형"> 호수형</label>
+  </div>
   <label>기타 보호구역 중복 지정 현황 (복수 선택 가능)</label>
   <div class="checkbox-group" id="overlap_designation">
     <label class="cb"><input type="checkbox" value="국립공원"> 국립공원</label>
@@ -90,32 +89,32 @@
 
   <div class="section-title">표지판 및 해설판</div>
   <label>표지판 유무</label>
-  <select id="signage_present">
-    <option value="있음">있음</option>
-    <option value="없음 or 확인불가">없음 or 확인불가</option>
-  </select>
+  <div class="checkbox-group" id="signage_present">
+    <label class="cb"><input type="radio" name="signage_present" value="있음"> 있음</label>
+    <label class="cb"><input type="radio" name="signage_present" value="없음 or 확인불가"> 없음 or 확인불가</label>
+  </div>
   <div class="row2">
     <div><label>표지판 수</label><input type="number" id="signage_count"></div>
     <div><label>표주 수</label><input type="number" id="marker_post_count"></div>
   </div>
   <label>표지판 적절성</label>
-  <select id="signage_appropriateness">
-    <option value="적절">적절</option>
-    <option value="부적절">부적절</option>
-  </select>
+  <div class="checkbox-group" id="signage_appropriateness">
+    <label class="cb"><input type="radio" name="signage_appropriateness" value="적절"> 적절</label>
+    <label class="cb"><input type="radio" name="signage_appropriateness" value="부적절"> 부적절</label>
+  </div>
   <label>부적절 사유</label><input type="text" id="signage_inappropriate_reason">
   <label>표지판 관리 상태</label>
-  <select id="signage_condition">
-    <option value="양호">양호</option>
-    <option value="보통">보통</option>
-    <option value="불량">불량</option>
-  </select>
+  <div class="checkbox-group" id="signage_condition">
+    <label class="cb"><input type="radio" name="signage_condition" value="양호"> 양호</label>
+    <label class="cb"><input type="radio" name="signage_condition" value="보통"> 보통</label>
+    <label class="cb"><input type="radio" name="signage_condition" value="불량"> 불량</label>
+  </div>
   <label>불량 사유</label><input type="text" id="signage_condition_bad_reason">
   <label>표지 및 해설 내용 정확성</label>
-  <select id="signage_content_accuracy">
-    <option value="정확">정확</option>
-    <option value="부정확">부정확</option>
-  </select>
+  <div class="checkbox-group" id="signage_content_accuracy">
+    <label class="cb"><input type="radio" name="signage_content_accuracy" value="정확"> 정확</label>
+    <label class="cb"><input type="radio" name="signage_content_accuracy" value="부정확"> 부정확</label>
+  </div>
   <div class="row2">
     <div><label>부정확 개수</label><input type="number" id="signage_content_wrong_count"></div>
     <div><label>부정확 사유</label><input type="text" id="signage_content_wrong_reason"></div>
@@ -123,65 +122,65 @@
 
   <div class="section-title">현장 관리 상태</div>
   <label>기타 시설 관리 (데크 등)</label>
-  <select id="other_facility_mgmt">
-    <option value="없음 or 확인불가">없음 or 확인불가</option>
-    <option value="양호">양호</option>
-    <option value="보통">보통</option>
-    <option value="불량">불량</option>
-  </select>
+  <div class="checkbox-group" id="other_facility_mgmt">
+    <label class="cb"><input type="radio" name="other_facility_mgmt" value="없음 or 확인불가"> 없음 or 확인불가</label>
+    <label class="cb"><input type="radio" name="other_facility_mgmt" value="양호"> 양호</label>
+    <label class="cb"><input type="radio" name="other_facility_mgmt" value="보통"> 보통</label>
+    <label class="cb"><input type="radio" name="other_facility_mgmt" value="불량"> 불량</label>
+  </div>
   <label>시설 비고</label><input type="text" id="facility_note">
   <label>환경 관리</label>
-  <select id="env_mgmt">
-    <option value="양호">양호</option>
-    <option value="보통">보통</option>
-    <option value="불량">불량</option>
-  </select>
+  <div class="checkbox-group" id="env_mgmt">
+    <label class="cb"><input type="radio" name="env_mgmt" value="양호"> 양호</label>
+    <label class="cb"><input type="radio" name="env_mgmt" value="보통"> 보통</label>
+    <label class="cb"><input type="radio" name="env_mgmt" value="불량"> 불량</label>
+  </div>
   <label>환경관리 비고</label><input type="text" id="env_mgmt_note">
   <label>이동로 현황</label>
-  <select id="access_road_status">
-    <option value="관리도로 있음">관리도로 있음</option>
-    <option value="관리 및 접근도로 없음 또는 불분명">관리 및 접근도로 없음 또는 불분명</option>
-    <option value="무분별한 이동로 조성으로 생태계 훼손 우려">무분별한 이동로 조성으로 생태계 훼손 우려</option>
-  </select>
+  <div class="checkbox-group" id="access_road_status">
+    <label class="cb"><input type="radio" name="access_road_status" value="관리도로 있음"> 관리도로 있음</label>
+    <label class="cb"><input type="radio" name="access_road_status" value="관리 및 접근도로 없음 또는 불분명"> 관리 및 접근도로 없음 또는 불분명</label>
+    <label class="cb"><input type="radio" name="access_road_status" value="무분별한 이동로 조성으로 생태계 훼손 우려"> 무분별한 이동로 조성으로 생태계 훼손 우려</label>
+  </div>
   <label>공원화 수준</label>
-  <select id="park_level">
-    <option value="여가/운동 시설 없음">여가/운동 시설 없음</option>
-    <option value="일부 공원화">일부 공원화</option>
-    <option value="완전 공원화">완전 공원화</option>
-  </select>
+  <div class="checkbox-group" id="park_level">
+    <label class="cb"><input type="radio" name="park_level" value="여가/운동 시설 없음"> 여가/운동 시설 없음</label>
+    <label class="cb"><input type="radio" name="park_level" value="일부 공원화"> 일부 공원화</label>
+    <label class="cb"><input type="radio" name="park_level" value="완전 공원화"> 완전 공원화</label>
+  </div>
   <label>주요 시설물</label><textarea id="main_facility_list"></textarea>
   <label>기타 관리현황</label><textarea id="other_mgmt_note"></textarea>
 
   <div class="section-title">토지이용 및 위협요인</div>
   <label>내부 토지이용 강도</label>
-  <select id="internal_land_use_intensity">
-    <option value="없음">없음</option>
-    <option value="약">약</option>
-    <option value="중">중</option>
-    <option value="강">강</option>
-  </select>
+  <div class="checkbox-group" id="internal_land_use_intensity">
+    <label class="cb"><input type="radio" name="internal_land_use_intensity" value="없음"> 없음</label>
+    <label class="cb"><input type="radio" name="internal_land_use_intensity" value="약"> 약</label>
+    <label class="cb"><input type="radio" name="internal_land_use_intensity" value="중"> 중</label>
+    <label class="cb"><input type="radio" name="internal_land_use_intensity" value="강"> 강</label>
+  </div>
   <label>내부 이용강도 이유</label><input type="text" id="internal_land_use_reason">
   <label>외부 토지이용 변화</label>
-  <select id="external_land_use_change">
-    <option value="없음">없음</option>
-    <option value="약">약</option>
-    <option value="중">중</option>
-    <option value="강">강</option>
-  </select>
+  <div class="checkbox-group" id="external_land_use_change">
+    <label class="cb"><input type="radio" name="external_land_use_change" value="없음"> 없음</label>
+    <label class="cb"><input type="radio" name="external_land_use_change" value="약"> 약</label>
+    <label class="cb"><input type="radio" name="external_land_use_change" value="중"> 중</label>
+    <label class="cb"><input type="radio" name="external_land_use_change" value="강"> 강</label>
+  </div>
   <label>외부 이용변화 이유</label><input type="text" id="external_land_use_reason">
   <label>생태계교란종(외래종 포함)</label>
-  <select id="invasive_species_status">
-    <option value="없음(확인불가)">없음(확인불가)</option>
-    <option value="국지적 발생">국지적 발생</option>
-    <option value="전반적 우점">전반적 우점</option>
-  </select>
+  <div class="checkbox-group" id="invasive_species_status">
+    <label class="cb"><input type="radio" name="invasive_species_status" value="없음(확인불가)"> 없음(확인불가)</label>
+    <label class="cb"><input type="radio" name="invasive_species_status" value="국지적 발생"> 국지적 발생</label>
+    <label class="cb"><input type="radio" name="invasive_species_status" value="전반적 우점"> 전반적 우점</label>
+  </div>
   <label>확인 종명</label><input type="text" id="invasive_species_names">
   <label>사람 출입</label>
-  <select id="human_access_level">
-    <option value="등산객 등 출입 많아 적절한 관리 필요">등산객 등 출입 많아 적절한 관리 필요</option>
-    <option value="주기적 출입있으나, 생태계보호 기능 유지">주기적 출입있으나, 생태계보호 기능 유지</option>
-    <option value="출입 거의 없거나, 영향 미미">출입 거의 없거나, 영향 미미</option>
-  </select>
+  <div class="checkbox-group" id="human_access_level">
+    <label class="cb"><input type="radio" name="human_access_level" value="등산객 등 출입 많아 적절한 관리 필요"> 등산객 등 출입 많아 적절한 관리 필요</label>
+    <label class="cb"><input type="radio" name="human_access_level" value="주기적 출입있으나, 생태계보호 기능 유지"> 주기적 출입있으나, 생태계보호 기능 유지</label>
+    <label class="cb"><input type="radio" name="human_access_level" value="출입 거의 없거나, 영향 미미"> 출입 거의 없거나, 영향 미미</label>
+  </div>
   <label>질병 발생 (복수 선택 가능)</label>
   <div class="checkbox-group" id="disease_occurrence">
     <label class="cb"><input type="checkbox" value="없음(확인불가)"> 없음(확인불가)</label>
@@ -236,7 +235,6 @@ async function loadSites() {
     sel.appendChild(opt);
   });
 
-  // URL에 ?id= 가 있으면 자동 선택
   const params = new URLSearchParams(location.search);
   const presetId = params.get('id');
   if (presetId) sel.value = presetId;
@@ -249,21 +247,28 @@ async function submitForm() {
     return;
   }
 
-  const fieldIds = ['survey_date','surveyor_type','surveyor_name','rep_env','wetland_subtype',
+  const textFieldIds = ['survey_date','surveyor_name',
     'overlap_designation_detail','other_env_note',
-    'signage_present','signage_count','marker_post_count','signage_appropriateness',
-    'signage_inappropriate_reason','signage_condition','signage_condition_bad_reason',
-    'signage_content_accuracy','signage_content_wrong_count','signage_content_wrong_reason',
-    'other_facility_mgmt','facility_note','env_mgmt','env_mgmt_note','access_road_status',
-    'park_level','main_facility_list','other_mgmt_note','internal_land_use_intensity',
-    'internal_land_use_reason','external_land_use_change','external_land_use_reason',
-    'invasive_species_status','invasive_species_names','human_access_level',
+    'signage_count','marker_post_count',
+    'signage_inappropriate_reason','signage_condition_bad_reason',
+    'signage_content_wrong_count','signage_content_wrong_reason',
+    'facility_note','env_mgmt_note',
+    'main_facility_list','other_mgmt_note',
+    'internal_land_use_reason','external_land_use_reason',
+    'invasive_species_names',
     'other_threat_note','overall_note'];
+
+  const radioGroupIds = ['surveyor_type','rep_env','wetland_subtype','signage_present',
+    'signage_appropriateness','signage_condition','signage_content_accuracy',
+    'other_facility_mgmt','env_mgmt','access_road_status','park_level',
+    'internal_land_use_intensity','external_land_use_change',
+    'invasive_species_status','human_access_level'];
 
   const checkboxGroupIds = ['overlap_designation','protection_value','disease_occurrence','disaster_type','illegal_activity_type'];
 
   const record = { site_number: parseInt(siteNumber) };
-  fieldIds.forEach(id => {
+
+  textFieldIds.forEach(id => {
     const el = document.getElementById(id);
     let v = el.value;
     if (v === '') { record[id] = null; return; }
@@ -272,6 +277,12 @@ async function submitForm() {
     } else {
       record[id] = v;
     }
+  });
+
+  radioGroupIds.forEach(id => {
+    const container = document.getElementById(id);
+    const checked = container.querySelector('input[type=radio]:checked');
+    record[id] = checked ? (checked.value === '' ? null : checked.value) : null;
   });
 
   checkboxGroupIds.forEach(id => {
