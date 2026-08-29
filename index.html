@@ -16,13 +16,44 @@
   .pagination button { padding: 6px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; }
   .pagination button.active { background: #2f6f4f; color: white; border-color: #2f6f4f; }
   .loading { padding: 20px; text-align: center; color: #888; }
+  .hero { background: linear-gradient(135deg, #2f6f4f, #1e4d36); color: white; padding: 36px 24px; border-radius: 8px; margin-bottom: 24px; }
+  .hero h1 { margin: 0 0 10px; font-size: 24px; }
+  .hero p { margin: 0; font-size: 14px; line-height: 1.7; opacity: 0.95; }
+  .list-title { font-size: 17px; margin: 24px 0 10px; }
+  .footer-links { margin-top: 30px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .footer-links h3 { font-size: 14px; margin: 0 0 10px; color: #2f6f4f; }
+  .footer-links a { display: inline-block; margin: 0 14px 8px 0; color: #2f6f4f; text-decoration: none; font-size: 14px; padding: 6px 12px; border: 1px solid #2f6f4f; border-radius: 4px; }
+  .footer-links a:hover { background: #2f6f4f; color: white; }
+  .contact-footer { margin-top: 16px; padding: 16px; text-align: center; font-size: 12px; color: #888; }
 </style>
 </head>
 <body>
 
-<h1>야생생물 보호구역 지정 현황</h1>
+<div class="hero">
+  <h1>야생생물 보호구역 정보시스템</h1>
+  <p>
+    이 사이트는 전국 야생생물 보호구역의 지정 현황과 등재 현황을 제공하고,<br>
+    현장에서 수행하는 관리현황조사·관리효과성평가·생물상조사 정보를 확인하고 직접 입력할 수 있는 공간입니다.
+  </p>
+</div>
+
+<div class="list-title">📋 보호구역 지정 현황</div>
 <div id="content" class="loading">불러오는 중...</div>
 <div id="pagination" class="pagination"></div>
+
+<div class="footer-links">
+  <h3>바로가기</h3>
+  <a href="stats.html">📊 통계</a>
+  <a href="law.html">📖 관련 법령</a>
+  <a href="management-status-form.html">📝 관리현황조사 입력</a>
+  <a href="mee-form.html">📝 관리효과성평가 입력</a>
+  <a href="biota-form.html">🦉 생물상조사 입력</a>
+</div>
+
+<div class="contact-footer">
+  이 사이트 관리 문의: 국립생태원 멸종위기종복원센터 서식지복원팀<br>
+  jwjung@nie.re.kr · 054-680-7343
+</div>
 
 <script>
 // ▼▼▼ 여기 두 줄만 본인 Supabase 값으로 바꾸세요 ▼▼▼
