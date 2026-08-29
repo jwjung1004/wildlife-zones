@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>전체 데이터 다운로드</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 0; padding: 20px; background: #f7f8fa; }
+  a.back { color: #2f6f4f; text-decoration: none; font-size: 14px; }
+  h1 { font-size: 20px; margin: 10px 0; }
+  .card { background: white; padding: 24px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px; }
+  ul { font-size: 14px; line-height: 1.9; }
+  button#dlBtn { margin-top: 16px; padding: 14px 28px; background: #2f6f4f; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; }
+  button#dlBtn:disabled { background: #999; cursor: default; }
+  #status { margin-top: 14px; font-size: 13px; color: #666; }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">&larr; 목록으로</a>
+<h1>전체 데이터 다운로드</h1>
+
+<div class="card">
+  <p>현재까지 등록된 아래 5개 항목의 데이터를 <b>엑셀 파일 하나(시트 5개)</b>로 받을 수 있습니다.</p>
+  <ul>
+    <li>보호구역 목록 (지정현황)</li>
+    <li>등재현황 (KDPA·K-Geop·SEE:REAL·Vworld·토지이음·생태자연도)</li>
+    <li>관리현황조사 결과</li>
+    <li>관리효과성평가 결과</li>
+    <li>생물상조사 결과</li>
+  </ul>
+  <button id="dlBtn" onclick="downloadAll()">전체 데이터 다운로드 (엑셀)</button>
+  <div id="status"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://tutxcagkhybttkrzvoso.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_DaKIBL4qkkjOmg26rEYrxQ_LkYnXkQY";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const TABLES = [
+  { name: 'sites', sheet: '보호구역목록' },
+  { name: 'site_registration', sheet: '등재현황' },
+  { name: 'management_status', sheet: '관리현황조사' },
+  { name: 'management_effectiveness', sheet: '관리효과성평가' },
+  { name: 'biota_survey', sheet: '생물상조사' },
+];
+
+async function downloadAll() {
+  const btn = document.getElementById('dlBtn');
+  const status = document.getElementById('status');
+  btn.disabled = true;
+
+  const wb = XLSX.utils.book_new();
+
+  for (const t of TABLES) {
+    status.textContent = `${t.sheet} 불러오는 중...`;
+    const { data, error } = await sb.from(t.name).select('*').order('id', { ascending: true });
+    if (error) {
+      status.textContent = `오류 발생 (${t.sheet}): ` + error.message;
+      btn.disabled = false;
+      return;
+    }
+    const ws = XLSX.utils.json_to_sheet(data || []);
+    XLSX.utils.book_append_sheet(wb, ws, t.sheet);
+  }
+
+  const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  status.textContent = '파일 생성 중...';
+  XLSX.writeFile(wb, `야생생물보호구역_전체데이터_${today}.xlsx`);
+  status.textContent = '다운로드 완료!';
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>
